@@ -14,6 +14,22 @@ using MyNW.Internals;
 
 namespace VariableTools.Actions
 {
+    public enum SaveState
+    {
+        /// <summary>
+        /// Не сохранять
+        /// </summary>
+        False,
+        /// <summary>
+        /// Сохранять
+        /// </summary>
+        True,
+        /// <summary>
+        /// Не менять значение флага сохранения
+        /// </summary>
+        NotChange
+    }
+
     [Serializable]
     public class SetVariable : Astral.Quester.Classes.Action
     {
@@ -113,7 +129,11 @@ namespace VariableTools.Actions
         [Description("Флаг, указывающий на необходимость сохранения переменной в файл.\n" +
              "Flag that orders to save the variable to a file.")]
         [Category("Variable options")]
-        public bool Save { get; set; } = false;
+#if false
+        public bool Save { get; set; } = false; 
+#else
+        public SaveState Save { get; set; } = SaveState.NotChange;
+#endif
         #endregion
 
         public override bool NeedToRun => true;
@@ -133,7 +153,15 @@ namespace VariableTools.Actions
                     if (VariableTools.Variables.TryGetValue(out VariableContainer variable, Key))
                     {
                         variable.Value = result;
-                        variable.Save = Save;
+                        switch (Save)
+                        {
+                            case SaveState.True:
+                                variable.Save = true;
+                                break;
+                            case SaveState.False:
+                                variable.Save = true;
+                                break;
+                        }
 #if DEBUG
                         if (VariableTools.DebugMessage)
                             Astral.Logger.WriteLine(Astral.Logger.LogType.Debug, string.Concat(nameof(VariableTools), "::", GetType().Name, '[', ActionID,
@@ -145,9 +173,18 @@ namespace VariableTools.Actions
                     }
                     else
                     {
-                        variable = VariableTools.Variables.Add(result, Key.Name, Key.AccountScope, Key.ProfileScope, Save);
+                        variable = VariableTools.Variables.Add(result, Key.Name, Key.AccountScope, Key.ProfileScope);
                         if (variable != null)
                         {
+                            switch (Save)
+                            {
+                                case SaveState.True:
+                                    variable.Save = true;
+                                    break;
+                                case SaveState.False:
+                                    variable.Save = true;
+                                    break;
+                            }
 #if DEBUG
                             if (VariableTools.DebugMessage)
                                 Astral.Logger.WriteLine(Astral.Logger.LogType.Debug, string.Concat(nameof(VariableTools), "::", GetType().Name, '[', ActionID,
