@@ -18,6 +18,18 @@ namespace VariableTools.Expressions
     [Serializable]
     public class NumberExpression : Expression<double>
     {
+        public NumberExpression() { }
+        public NumberExpression(string text) { Text = text; }
+        public NumberExpression(NumberExpression exprs)
+        {
+            if (exprs != null)
+            {
+                text = exprs.text;
+                shortText = exprs.shortText;
+                ast = exprs.ast;
+            }
+        }
+
         [XmlIgnore]
         public override bool IsValid
         {

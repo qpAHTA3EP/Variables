@@ -52,7 +52,7 @@ namespace VariableTools.Classes
     }
 
     [Serializable]
-    public class VariableContainer : ISerializable, IXmlSerializable
+    public class VariableContainer : ISerializable, IXmlSerializable, INotifyPropertyChanged
     {
         private VariableContainer()
         {
@@ -70,7 +70,7 @@ namespace VariableTools.Classes
             accountScope = asq;
             profileScope = psq;
             qualifier = VariableTools.GetScopeQualifier(accountScope, profileScope);
-            Save = s;
+            save = s;
             LastOperation = //$"[{DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss")}] {EntityManager.LocalPlayer.InternalName} initialized with the value {val}";
                             string.Concat('[', DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "] ",
                                         (EntityManager.LocalPlayer.InternalName is null || string.IsNullOrEmpty(EntityManager.LocalPlayer.InternalName)) ? "Offline" : EntityManager.LocalPlayer.InternalName,
@@ -85,8 +85,6 @@ namespace VariableTools.Classes
         internal VariableKey Key => new VariableKey(name, accountScope, profileScope);
 
 
-        [XmlIgnore]
-        private string name = string.Empty;
         /// <summary>
         /// Имя переменной
         /// </summary>
@@ -95,21 +93,21 @@ namespace VariableTools.Classes
             get => name;
             set
             {
-                if(name != value)
+                if (name != value)
                 {
-                    string opDescription = string.Concat('[', DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),"] ",
+                    string opDescription = string.Concat('[', DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "] ",
                                             (EntityManager.LocalPlayer.InternalName is null || string.IsNullOrEmpty(EntityManager.LocalPlayer.InternalName)) ? "Offline" : EntityManager.LocalPlayer.InternalName,
-                                            " changed '",nameof(Name),"' from '",name,"' to '",value,"'. The value is ",val);
+                                            " changed '", nameof(Name), "' from '", name, "' to '", value, "'. The value is ", val);
                     if (VariableTools.Variables.ContainsKey(Key))
                         VariableTools.Variables.ChangeItemKey(this, new VariableKey(value, accountScope, profileScope));
                     name = value;
                     LastOperation = opDescription;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
                 }
             }
         }
+        private string name = string.Empty;
 
-        [XmlIgnore]
-        private double val = 0;
         /// <summary>
         /// Значение переменной
         /// </summary>
@@ -130,13 +128,12 @@ namespace VariableTools.Classes
                                     string.Concat('[', DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "] ",
                                         (EntityManager.LocalPlayer.InternalName is null || string.IsNullOrEmpty(EntityManager.LocalPlayer.InternalName)) ? "Offline" : EntityManager.LocalPlayer.InternalName,
                                         " assigned the value ", val);
-
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
                 }
             }
         }
+        private double val = 0;
 
-        [XmlIgnore]
-        private AccountScopeType accountScope = AccountScopeType.Global;
         /// <summary>
         /// Переключатель области видимости переменной для аккаунта
         /// </summary>
@@ -157,12 +154,12 @@ namespace VariableTools.Classes
                     qualifier = newKey.Qualifier;
                     accountScope = value;
                     LastOperation = opDescription;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AccountScope)));
                 }
             }
         }
+        private AccountScopeType accountScope = AccountScopeType.Global;
 
-        [XmlIgnore]
-        private ProfileScopeType profileScope = ProfileScopeType.Common;
         /// <summary>
         /// Переключатель области видимости для квестер-профиля
         /// </summary>
@@ -171,33 +168,47 @@ namespace VariableTools.Classes
             get => profileScope;
             set
             {
-                if(profileScope != value)
+                if (profileScope != value)
                 {
-                    string opDescription =  string.Concat('[', DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "] ",
+                    string opDescription = string.Concat('[', DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "] ",
                                             (EntityManager.LocalPlayer.InternalName is null || string.IsNullOrEmpty(EntityManager.LocalPlayer.InternalName)) ? "Offline" : EntityManager.LocalPlayer.InternalName,
                                             " changed '", nameof(ProfileScope), "' from '", profileScope, "' to '", value, "'. The value is ", val);
-                        VariableKey newKey = new VariableKey(name, accountScope, value);
+                    VariableKey newKey = new VariableKey(name, accountScope, value);
                     if (VariableTools.Variables.ContainsKey(Key))
                         VariableTools.Variables.ChangeItemKey(this, newKey);
                     qualifier = newKey.Qualifier;
                     profileScope = value;
                     LastOperation = opDescription;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProfileScope)));
                 }
             }
         }
+        private ProfileScopeType profileScope = ProfileScopeType.Common;
 
-        [XmlIgnore]
-        private string qualifier = string.Empty;
         /// <summary>
         /// Идентификатор области видимости переменной
         /// </summary>
         [ReadOnly(true)]
         public string ScopeQualifier { get => qualifier; }
+        private string qualifier = string.Empty;
 
         /// <summary>
         /// Флаг сохранения в файл при закрытии Астрала
         /// </summary>
-        public bool Save { get; set; }
+        public bool Save
+        {
+            get => save; set
+            {
+                if (save != value)
+                {
+                    save = value;
+                    PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Save)));
+                }
+            }
+        }
+        private bool save;
+
+        public event PropertyChangedEventHandler PropertyChanged;
 
         /// <summary>
         /// Запись о последней операции присваивания
@@ -235,12 +246,12 @@ namespace VariableTools.Classes
 
         internal void ChangeScopeImplementation(VariableContainer item, VariableKey newKey)
         {
-            if(ReferenceEquals(this, item))
+            if (ReferenceEquals(this, item))
             {
-                LastOperation =  string.Concat('[', DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "] ",
+                LastOperation = string.Concat('[', DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"), "] ",
                                                 (EntityManager.LocalPlayer.InternalName is null || string.IsNullOrEmpty(EntityManager.LocalPlayer.InternalName)) ? "Offline" : EntityManager.LocalPlayer.InternalName,
-                                                " changed scope from [", name, ", ", accountScope, ", ", profileScope, 
-                                                "] to [", newKey.Name, ", ", newKey.AccountScope,", ", newKey.ProfileScope, "]. The value is ", val);
+                                                " changed scope from [", name, ", ", accountScope, ", ", profileScope,
+                                                "] to [", newKey.Name, ", ", newKey.AccountScope, ", ", newKey.ProfileScope, "]. The value is ", val);
                 name = newKey.Name;
                 accountScope = newKey.AccountScope;
                 profileScope = newKey.ProfileScope;
@@ -261,8 +272,8 @@ namespace VariableTools.Classes
 
             string save_str = info.GetString(nameof(Save));
             if (bool.TryParse(save_str, out bool s))
-                Save = s;
-            else Save = false;
+                save = s;
+            else save = false;
 
             string scope_str = info.GetString(nameof(AccountScope));
             if (!Enum.TryParse(scope_str, out accountScope))
@@ -287,7 +298,7 @@ namespace VariableTools.Classes
         {
             info.AddValue(nameof(Name), name);
             info.AddValue(nameof(Value), val);
-            info.AddValue(nameof(Save), Save);
+            info.AddValue(nameof(Save), save);
             info.AddValue(nameof(AccountScope), accountScope);
             info.AddValue(nameof(ProfileScope), profileScope);
             info.AddValue(nameof(ScopeQualifier), qualifier.ToLower());
@@ -303,13 +314,13 @@ namespace VariableTools.Classes
 
         public void ReadXml(XmlReader reader)
         {
-            if ( reader.IsStartElement()
+            if (reader.IsStartElement()
                 && reader.Name == GetType().Name)
             {
                 reader.ReadStartElement(nameof(VariableContainer));
-                while(reader.ReadState == ReadState.Interactive)
+                while (reader.ReadState == ReadState.Interactive)
                 {
-                    switch(reader.Name)
+                    switch (reader.Name)
                     {
                         case "Name":
                             name = reader.ReadElementContentAsString(nameof(Name), "");
@@ -365,7 +376,7 @@ namespace VariableTools.Classes
         {
             writer.WriteElementString(nameof(Name), name);
             writer.WriteElementString(nameof(Value), val.ToString());
-            writer.WriteElementString(nameof(Save), Save.ToString());
+            writer.WriteElementString(nameof(Save), save.ToString());
             writer.WriteElementString(nameof(AccountScope), accountScope.ToString());
             writer.WriteElementString(nameof(ProfileScope), profileScope.ToString());
             writer.WriteElementString(nameof(ScopeQualifier), qualifier.ToLower());

@@ -12,7 +12,7 @@
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
-    <AssemblyVersion>0.20.0505.1352</AssemblyVersion>
+    <AssemblyVersion>0.20.0601.1401</AssemblyVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -125,7 +125,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Astral_patched">
-      <HintPath>..\References\x64\Astral_patched.exe</HintPath>
+      <HintPath>..\..\References\x64\Astral_patched.exe</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="DevExpress.Data.v18.1, Version=18.1.6.0, Culture=neutral, PublicKeyToken=b88d1754d700e49a">
@@ -147,7 +147,7 @@
       <Private>False</Private>
     </Reference>
     <Reference Include="MyNW">
-      <HintPath>..\References\x64\MyNW.dll</HintPath>
+      <HintPath>..\..\References\x64\MyNW.dll</HintPath>
       <Private>False</Private>
     </Reference>
     <Reference Include="System" />
@@ -163,6 +163,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Actions\DeleteVariable.cs" />
     <Compile Include="Classes\VariableCollection.cs" />
     <Compile Include="Classes\VariableContainer.cs" />
     <Compile Include="Editors\StoreVariableEditor.cs" />

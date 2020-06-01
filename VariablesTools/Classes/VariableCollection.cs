@@ -36,7 +36,7 @@ namespace VariableTools.Classes
         /// Ключ идентифицирующий переменную в коллекцию
         /// </summary>
         [Serializable]
-        public class VariableKey
+        public class VariableKey : INotifyPropertyChanged
         {
             internal VariableKey() { }
             //internal VariableKey(string n, string q)
@@ -57,6 +57,8 @@ namespace VariableTools.Classes
             private ProfileScopeType profileScope = ProfileScopeType.Common;
             private string name = string.Empty;
             private bool valid = false;
+
+            public event PropertyChangedEventHandler PropertyChanged;
 
             [Description("Имя переменной.\n" +
                          "The Name of the Variable")]
@@ -94,6 +96,7 @@ namespace VariableTools.Classes
                             name = value;
                             valid = true;
                         }
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Name)));
                     }
                 }
             }
@@ -109,6 +112,7 @@ namespace VariableTools.Classes
                     {
                         Qualifier = VariableTools.GetScopeQualifier(accountScope, value);
                         profileScope = value;
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(ProfileScope)));
                     }
                 }
             }
@@ -124,6 +128,7 @@ namespace VariableTools.Classes
                     {
                         Qualifier = VariableTools.GetScopeQualifier(value, profileScope);
                         accountScope = value;
+                        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(AccountScope)));
                     }
                 }
             }

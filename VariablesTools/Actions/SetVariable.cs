@@ -21,7 +21,7 @@ namespace VariableTools.Actions
         [Description("Идентификатор (имя) переменной.\n" +
                      "В имени переменной допускается использовние букв, цифр и символа \'_\'\n" +
                      "The Name of the {Variable}.")]
-        [Category("Variable")]
+        [Category("Variable options")]
         [DisplayName("Variable")]
         [TypeConverter(typeof(ExpandableObjectConverter))]
         [Editor(typeof(VariableSelectUiEditor), typeof(UITypeEditor))]
@@ -84,14 +84,13 @@ namespace VariableTools.Actions
             }
         }
 
-        [Category("Variable")]
+        [Category("Variable options")]
         [XmlIgnore]
         [Editor(typeof(StoreVariableEditor), typeof(UITypeEditor))]
         [Description("Нажми на кнопку '...' чтобы сохранить переменную в коллекцию\n" +
                      "Press button '...' to store the variable to the collection")]
         public string VariableToCollection { get; } = "Нажми на кнопку '...' =>";
 
-        private NumberExpression equation = new NumberExpression();
 
         [Editor(typeof(EquationUiEditor), typeof(UITypeEditor))]
         [Description("Выражение, результат которого присваивается переменной {Variable}.\n" +
@@ -109,7 +108,12 @@ namespace VariableTools.Actions
                 }
             }
         }
+        private NumberExpression equation = new NumberExpression();
 
+        [Description("Флаг, указывающий на необходимость сохранения переменной в файл.\n" +
+             "Flag that orders to save the variable to a file.")]
+        [Category("Variable options")]
+        public bool Save { get; set; } = false;
         #endregion
 
         public override bool NeedToRun => true;
@@ -129,18 +133,19 @@ namespace VariableTools.Actions
                     if (VariableTools.Variables.TryGetValue(out VariableContainer variable, Key))
                     {
                         variable.Value = result;
+                        variable.Save = Save;
 #if DEBUG
                         if (VariableTools.DebugMessage)
                             Astral.Logger.WriteLine(Astral.Logger.LogType.Debug, string.Concat(nameof(VariableTools), "::", GetType().Name, '[', ActionID,
                                 "]: Character '", (EntityManager.LocalPlayer?.InternalName is null || string.IsNullOrEmpty(EntityManager.LocalPlayer.InternalName)) ? "Offline" : EntityManager.LocalPlayer.InternalName,
                                 "' assign the value '", variable.Value, "' to the Variable {", variable.Name, "}[", variable.AccountScope, ", ", variable.ProfileScope, 
-                                "] (as the result of the Equation = ", equation.Text,')'));
+                                "] (as the result of the Equation = ", equation.Text,"). Save = ", Save));
 #endif
                         return ActionResult.Completed;
                     }
                     else
                     {
-                        variable = VariableTools.Variables.Add(result, Key.Name, Key.AccountScope, Key.ProfileScope);
+                        variable = VariableTools.Variables.Add(result, Key.Name, Key.AccountScope, Key.ProfileScope, Save);
                         if (variable != null)
                         {
 #if DEBUG
@@ -148,7 +153,7 @@ namespace VariableTools.Actions
                                 Astral.Logger.WriteLine(Astral.Logger.LogType.Debug, string.Concat(nameof(VariableTools), "::", GetType().Name, '[', ActionID,
                                     "]: Character '", (EntityManager.LocalPlayer?.InternalName is null || string.IsNullOrEmpty(EntityManager.LocalPlayer.InternalName)) ? "Offline" : EntityManager.LocalPlayer.InternalName,
                                     "' initialize the Variable {", variable.ToString(), "} with the value '", variable.Value, 
-                                    "' (as the result of the Equation = ", equation.Text, ')'));
+                                    "' (as the result of the Equation = ", equation.Text, "). Save = ", Save));
 
 #endif
                             return ActionResult.Completed;
@@ -173,18 +178,21 @@ namespace VariableTools.Actions
         }
 
         #region Интерфейс Quester.Action
-        public override string ActionLabel
+        public override string ActionLabel => string.Empty;
+
+        public override string ToString()
         {
-            get
+            if (string.IsNullOrEmpty(lable))
             {
-                if (string.IsNullOrEmpty(lable))
+                if (Key != null)
                 {
-                    if (Key != null)
+                    if (equation != null || !string.IsNullOrEmpty(equation.Text))
                         lable = $"{GetType().Name}: {Key.ToString()} := {equation.Text}";
-                    else lable = GetType().Name;
+                    else lable = $"{GetType().Name}: {Key.ToString()}";
                 }
-                return lable;
+                else lable = GetType().Name;
             }
+            return lable;
         }
         private string lable = string.Empty;
 
@@ -198,13 +206,13 @@ namespace VariableTools.Actions
             {
                 if (equation.IsValid)
                 {
-                    if (/*variableNameOk*/ Key.IsValid)
+                    if (Key != null && Key.IsValid)
                         return new ActionValidity();
                     else return new ActionValidity("The name of the {Variable} contains forbidden symbols or equals to Function name");
                 }
                 else
                 {
-                    if (/*variableNameOk*/ Key.IsValid)
+                    if (Key != null && Key.IsValid)
                         return new ActionValidity("Equation is incorrect");
                     else return new ActionValidity("Equation is incorrect.\n" +
                         "The name of the {Variable} contains forbidden symbols or equals to Function name");

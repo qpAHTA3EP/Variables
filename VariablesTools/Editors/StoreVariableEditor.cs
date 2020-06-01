@@ -36,8 +36,11 @@ namespace VariableTools.Editors
                     }
 
                     if (VariableTools.Variables.TryGetValue(out VariableContainer variable, SetVarCommand.Key))
+                    {
                         variable.Value = result;
-                    else variable = VariableTools.Variables.Add(result, SetVarCommand.Key.Name, SetVarCommand.Key.AccountScope, SetVarCommand.Key.ProfileScope);
+                        variable.Save = SetVarCommand.Save;
+                    }
+                    else variable = VariableTools.Variables.Add(result, SetVarCommand.Key.Name, SetVarCommand.Key.AccountScope, SetVarCommand.Key.ProfileScope, SetVarCommand.Save);
 
                     if (variable != null)
                         XtraMessageBox.Show($"В переменную {variable.ToString()} записано значение '{variable.Value}'\n" +

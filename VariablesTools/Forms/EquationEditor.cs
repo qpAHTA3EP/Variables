@@ -11,22 +11,22 @@ namespace VariableTools.Forms
     public partial class EquationEditor : XtraForm //*/Form
     {
         private static NumberExpression expression;
-        private static EquationEditor equationEditor;
+        private static EquationEditor @this;
 
         public static NumberExpression GetExpression(NumberExpression val = null)
         {
             if (val != null)
-                expression = val;
+                expression = new NumberExpression(val);
 
             if (expression == null)
                 expression = new NumberExpression();
 
-            if (equationEditor == null)
-                equationEditor = new EquationEditor();
+            if (@this == null)
+                @this = new EquationEditor();
 
-            equationEditor.tbExpression.Text = expression.Text;
+            @this.tbExpression.Text = expression.Text;
 
-            DialogResult dResult = equationEditor.ShowDialog();
+            DialogResult dResult = @this.ShowDialog();
             if (dResult == DialogResult.OK)
                 return expression;
 

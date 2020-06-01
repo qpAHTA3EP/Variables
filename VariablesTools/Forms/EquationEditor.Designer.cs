@@ -60,7 +60,7 @@
             // 
             this.btnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.btnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnCancel.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnCancel.Location = new System.Drawing.Point(360, 217);
             this.btnCancel.Name = "btnCancel";
             this.btnCancel.Size = new System.Drawing.Size(60, 23);
@@ -71,7 +71,7 @@
             // btnSave
             // 
             this.btnSave.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnSave.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnSave.Location = new System.Drawing.Point(294, 217);
             this.btnSave.Name = "btnSave";
             this.btnSave.Size = new System.Drawing.Size(60, 23);
@@ -96,7 +96,7 @@
             // btnValidate
             // 
             this.btnValidate.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.btnValidate.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
+            this.btnValidate.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.btnValidate.Location = new System.Drawing.Point(153, 217);
             this.btnValidate.Name = "btnValidate";
             this.btnValidate.Size = new System.Drawing.Size(60, 23);
@@ -116,7 +116,7 @@
             this.dtnInsert.AppearanceDropDown.BackColor = System.Drawing.SystemColors.Control;
             this.dtnInsert.AppearanceDropDown.BackColor2 = System.Drawing.SystemColors.Control;
             this.dtnInsert.AppearanceDropDown.Options.UseBackColor = true;
-            this.dtnInsert.ButtonStyle = DevExpress.XtraEditors.Controls.BorderStyles.Flat;
+            this.dtnInsert.ButtonStyle = DevExpress.XtraEditors.Controls.BorderStyles.Simple;
             this.dtnInsert.DropDownControl = this.popInsert;
             this.dtnInsert.Location = new System.Drawing.Point(12, 217);
             this.dtnInsert.LookAndFeel.SkinMaskColor = System.Drawing.SystemColors.Control;
@@ -146,8 +146,6 @@
             // 
             // btnInsVarible
             // 
-            this.btnInsVarible.AllowDrawArrow = false;
-            this.btnInsVarible.AllowDrawArrowInMenu = false;
             this.btnInsVarible.Caption = "Variable";
             this.btnInsVarible.Id = 0;
             this.btnInsVarible.ItemInMenuAppearance.Disabled.BackColor = System.Drawing.SystemColors.Control;
@@ -217,7 +215,6 @@
             this.btnInsDateTime.ButtonStyle = DevExpress.XtraBars.BarButtonStyle.DropDown;
             this.btnInsDateTime.Caption = "DateTime(...)";
             this.btnInsDateTime.DropDownControl = this.popDateTime;
-            this.btnInsDateTime.GroupIndex = 1;
             this.btnInsDateTime.Id = 4;
             this.btnInsDateTime.Name = "btnInsDateTime";
             // 
@@ -290,7 +287,7 @@
             this.btnInsHours,
             this.btnInsMinutes,
             this.btnInsSeconds});
-            this.barManager.MaxItemId = 12;
+            this.barManager.MaxItemId = 14;
             // 
             // barDockControlTop
             // 
@@ -344,7 +341,7 @@
             this.MinimumSize = new System.Drawing.Size(440, 150);
             this.Name = "EquationEditor";
             this.ShowIcon = false;
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
             this.Text = "EquationEditor";
             ((System.ComponentModel.ISupportInitialize)(this.popInsert)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.popDateTime)).EndInit();
